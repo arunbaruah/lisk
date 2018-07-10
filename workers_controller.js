@@ -14,8 +14,6 @@
 
 'use strict';
 
-var path = require('path');
-var fs = require('fs');
 var async = require('async');
 var SCWorker = require('socketcluster/scworker');
 var SlaveWAMPServer = require('wamp-socket-cluster/SlaveWAMPServer');
@@ -29,15 +27,9 @@ var emitMiddleware = require('./api/ws/workers/middlewares/emit');
 var PeersUpdateRules = require('./api/ws/workers/peers_update_rules');
 var Rules = require('./api/ws/workers/rules');
 var failureCodes = require('./api/ws/rpc/failure_codes');
+var AppConfig = require('./helpers/config.js');
 var createLogger = require('./logger');
-
-var config = fs.readFileSync(
-	path.resolve(
-		process.cwd(),
-		`./config/${process.env.LISK_NETWORK}/config.json`
-	),
-	'utf8'
-);
+var config = AppConfig(require('./package.json'));
 
 /**
  * Instantiate the SocketCluster SCWorker instance with custom logic
@@ -54,13 +46,10 @@ SCWorker.create({
 				logger(cb) {
 					cb(
 						null,
-						createLogger(
-							{
-								level: config.fileLogLevel,
-								filename: config.logFileName,
-							},
-							'p2p-worker'
-						)
+						createLogger({
+							level: config.fileLogLevel,
+							filename: config.logFileName,
+						})
 					);
 				},
 
