@@ -910,8 +910,8 @@ describe('transaction', () => {
 			height: 1,
 		};
 
-		function undoTransaction(transaction, sender, done) {
-			transactionLogic.undo(transaction, dummyBlock, sender, done);
+		function undoConfirmedTransaction(transaction, sender, done) {
+			transactionLogic.undoConfirmed(transaction, dummyBlock, sender, done);
 		}
 
 		it('should throw an error with no param', () => {
@@ -965,7 +965,7 @@ describe('transaction', () => {
 									expect(balanceAfter.plus(amount).toString()).to.equal(
 										balanceBefore.toString()
 									);
-									undoTransaction(validTransaction, sender, done);
+									undoConfirmedTransaction(validTransaction, sender, done);
 								}
 							);
 						}
@@ -975,7 +975,7 @@ describe('transaction', () => {
 		});
 	});
 
-	describe('undo', () => {
+	describe('undoConfirmed', () => {
 		var dummyBlock = {
 			id: '9314232245035524467',
 			height: 1,
@@ -986,7 +986,7 @@ describe('transaction', () => {
 		}
 
 		it('should throw an error with no param', () => {
-			return expect(transactionLogic.undo).to.throw();
+			return expect(transactionLogic.undoConfirmed).to.throw();
 		});
 
 		it('should not update sender balance when transaction is invalid', done => {
@@ -1001,22 +1001,29 @@ describe('transaction', () => {
 				(err, accountBefore) => {
 					var balanceBefore = new bignum(accountBefore.balance.toString());
 
-					transactionLogic.undo(transaction, dummyBlock, sender, () => {
-						accountModule.getAccount(
-							{ publicKey: transaction.senderPublicKey },
-							(err, accountAfter) => {
-								var balanceAfter = new bignum(accountAfter.balance.toString());
+					transactionLogic.undoConfirmed(
+						transaction,
+						dummyBlock,
+						sender,
+						() => {
+							accountModule.getAccount(
+								{ publicKey: transaction.senderPublicKey },
+								(err, accountAfter) => {
+									var balanceAfter = new bignum(
+										accountAfter.balance.toString()
+									);
 
-								expect(
-									balanceBefore.plus(amount.mul(2)).toString()
-								).to.not.equal(balanceAfter.toString());
-								expect(balanceBefore.toString()).to.equal(
-									balanceAfter.toString()
-								);
-								done();
-							}
-						);
-					});
+									expect(
+										balanceBefore.plus(amount.mul(2)).toString()
+									).to.not.equal(balanceAfter.toString());
+									expect(balanceBefore.toString()).to.equal(
+										balanceAfter.toString()
+									);
+									done();
+								}
+							);
+						}
+					);
 				}
 			);
 		});
@@ -1032,20 +1039,27 @@ describe('transaction', () => {
 				(err, accountBefore) => {
 					var balanceBefore = new bignum(accountBefore.balance.toString());
 
-					transactionLogic.undo(transaction, dummyBlock, sender, () => {
-						accountModule.getAccount(
-							{ publicKey: transaction.senderPublicKey },
-							(err, accountAfter) => {
-								var balanceAfter = new bignum(accountAfter.balance.toString());
+					transactionLogic.undoConfirmed(
+						transaction,
+						dummyBlock,
+						sender,
+						() => {
+							accountModule.getAccount(
+								{ publicKey: transaction.senderPublicKey },
+								(err, accountAfter) => {
+									var balanceAfter = new bignum(
+										accountAfter.balance.toString()
+									);
 
-								expect(err).to.not.exist;
-								expect(balanceBefore.plus(amount).toString()).to.equal(
-									balanceAfter.toString()
-								);
-								applyConfirmedTransaction(transaction, sender, done);
-							}
-						);
-					});
+									expect(err).to.not.exist;
+									expect(balanceBefore.plus(amount).toString()).to.equal(
+										balanceAfter.toString()
+									);
+									applyConfirmedTransaction(transaction, sender, done);
+								}
+							);
+						}
+					);
 				}
 			);
 		});
