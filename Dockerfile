@@ -48,9 +48,8 @@ RUN curl --silent --show-error --location --output /tmp/confd \
     fi
 
 RUN LISK_VERSION=$( jq --raw-output .version /home/lisk/lisk/package.json ) && \
-    LISK_MIN_VERSION=$( jq --raw-output .lisk.minVersion /home/lisk/lisk/package.json ) && \
     sed --in-place --expression \
-        "s/__LISK_VERSION__REPLACE_ME__/$LISK_VERSION/;s/__LISK_MIN_VERSION__REPLACE_ME__/$LISK_MIN_VERSION/" \
+        "s/__LISK_VERSION__REPLACE_ME__/$LISK_VERSION/" \
 	/etc/confd/templates/config.json.tmpl
 
 ENV LISK_API_ACCESS_WHITELIST_1=127.0.0.1
