@@ -1,6 +1,6 @@
 [template]
 src = "config.json.tmpl"
-dest = "config.json"
+dest = "config/__LISK_NETWORK__REPLACE_ME__/config.json"
 keys = [
     "/lisk",
 ]

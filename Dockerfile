@@ -47,6 +47,10 @@ RUN curl --silent --show-error --location --output /tmp/confd \
 	exit 1; \
     fi
 
+RUN sed --in-place --expression \
+    "s/__LISK_NETWORK__REPLACE_ME__/$LISK_NETWORK/" \
+    /etc/confd/conf.d/lisk.toml
+
 RUN LISK_VERSION=$( jq --raw-output .version /home/lisk/lisk/package.json ) && \
     sed --in-place --expression \
         "s/__LISK_VERSION__REPLACE_ME__/$LISK_VERSION/" \
